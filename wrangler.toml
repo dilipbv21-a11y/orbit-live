@@ -1,0 +1,14 @@
+name = "orbit-live"
+main = "index.js"
+compatibility_date = "2025-07-01"
+
+[vars]
+SUPABASE_URL = "https://oeocdhkoxavjsxypwcjr.supabase.co"
+
+[[durable_objects.bindings]]
+name = "HUB"
+class_name = "Hub"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Hub"]
