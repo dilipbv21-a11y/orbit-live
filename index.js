@@ -21,7 +21,7 @@ async function hkdf(salt, ikm, info, len) {
   const k = await crypto.subtle.importKey('raw', ikm, 'HKDF', false, ['deriveBits']);
   return new Uint8Array(await crypto.subtle.deriveBits({ name: 'HKDF', hash: 'SHA-256', salt, info }, k, len * 8));
 }
-export async function encryptPush(p256dh, authB64, text) {
+async function encryptPush(p256dh, authB64, text) {
   const uaPub = ub64u(p256dh), authSecret = ub64u(authB64);
   const as = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveBits']);
   const asPub = new Uint8Array(await crypto.subtle.exportKey('raw', as.publicKey));
@@ -35,7 +35,7 @@ export async function encryptPush(p256dh, authB64, text) {
   const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv: nonce }, key, concat(enc.encode(text), new Uint8Array([2]))));
   return concat(salt, new Uint8Array([0, 0, 16, 0]), new Uint8Array([asPub.length]), asPub, ct);
 }
-export async function vapidHeader(endpoint, privKey, pubB64) {
+async function vapidHeader(endpoint, privKey, pubB64) {
   const h = b64u(enc.encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
   const p = b64u(enc.encode(JSON.stringify({ aud: new URL(endpoint).origin, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: 'mailto:login@orbitcampus.in' })));
   const sig = await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, privKey, enc.encode(h + '.' + p));
